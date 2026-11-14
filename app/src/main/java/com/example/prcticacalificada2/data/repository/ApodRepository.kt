@@ -7,6 +7,7 @@ import com.example.prcticacalificada2.data.remote.ApodApi
 import com.example.prcticacalificada2.data.remote.dto.toEntity
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 /**
  * Repository de Imágenes: accede a la API y a Room.
@@ -30,9 +31,10 @@ class ApodRepository(
 
     suspend fun refreshApods(today: LocalDate = LocalDate.now()) {
         check(apiKey.isNotBlank()) { "Falta NASA_API_KEY en local.properties" }
+        val nasaDate = DateTimeFormatter.ofPattern("yyMMdd")
         val response = api.getApods(
-            startDate = today.minusDays(6).toString(),
-            endDate = today.toString(),
+            dateFrom = today.minusDays(6).format(nasaDate),
+            dateTo = today.format(nasaDate),
             apiKey = apiKey
         )
         dao.upsertKeepingFavorites(response.mapNotNull { it.toEntity() })

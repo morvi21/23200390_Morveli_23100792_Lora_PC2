@@ -33,7 +33,7 @@ La clave se lee en `app/build.gradle.kts` y se expone al código como
 data/
   remote/
     RetrofitClient.kt        (común)  Retrofit + Gson, URL base https://api.nasa.gov/
-    ApodApi.kt               (A1)     GET planetary/apod (start_date, end_date)
+    ApodApi.kt               (A1)     GET science.nasa.gov/wp-json/wp/v2/apod-basic (ver nota)
     dto/ApodDto.kt           (A1)     DTO + conversión explícita DTO -> Entity
     NeoApi.kt                (A2)     GET neo/rest/v1/feed
     dto/NeoFeedDto.kt        (A2)     DTOs (todos los campos anulables)
@@ -92,6 +92,15 @@ Flujo de datos: **API → DTO → mapper → Entity → Room → Flow → ViewMo
   5. Agrega la dependencia de Coil si la necesita para las imágenes.
 - No se cambian los nombres de las rutas de los grafos ni el nombre de la base de datos sin
   avisar al compañero.
+
+### Nota sobre el servicio APOD
+
+En noviembre de 2026 `https://api.nasa.gov/planetary/apod` responde para todas las fechas
+con el mismo marcador (título "NASA Science" y el logo de la NASA), porque NASA migró APOD
+a science.nasa.gov. Por eso la opción Imágenes usa el servicio nuevo **APOD Basic**
+(`https://science.nasa.gov/wp-json/wp/v2/apod-basic?date_from=AAMMDD&date_to=AAMMDD`), que
+devuelve los mismos campos (`date`, `title`, `explanation`, `url`, `hdurl`, `media_type`,
+`copyright`). En ese servicio `url` es la página del artículo y la imagen está en `hdurl`.
 
 ### Integración realizada
 
