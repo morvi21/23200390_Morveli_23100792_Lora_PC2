@@ -33,22 +33,36 @@ La clave se lee en `app/build.gradle.kts` y se expone al código como
 data/
   remote/
     RetrofitClient.kt        (común)  Retrofit + Gson, URL base https://api.nasa.gov/
+    ApodApi.kt               (A1)     GET planetary/apod (start_date, end_date)
+    dto/ApodDto.kt           (A1)     DTO + conversión explícita DTO -> Entity
     NeoApi.kt                (A2)     GET neo/rest/v1/feed
     dto/NeoFeedDto.kt        (A2)     DTOs (todos los campos anulables)
     dto/NeoMapper.kt         (A2)     conversión explícita DTO -> Entity
   local/
     AppDatabase.kt           (común)  clase Database de Room
+    ApodEntity.kt / ApodDao.kt         (A1)  tabla "apods"
     AsteroidEntity.kt / AsteroidDao.kt (A2)  tabla "asteroides"
   repository/
+    ApodRepository.kt        (A1)     API -> Room; la UI solo lee de Room
     AsteroidRepository.kt    (A2)     API -> Room; la UI solo lee de Room
 AppContainer.kt / DiarioEspacialApp.kt (común)  creación de repositorios
 ui/
   navigation/AppNavigation.kt (común) barra inferior Imágenes | Asteroides
-  imagenes/                   (A1)    grafo de navegación de APOD
+  imagenes/                   (A1)    ViewModels (StateFlow), lista, detalle, favoritas
   asteroides/                 (A2)    ViewModels (StateFlow), lista, detalle, favoritos
 ```
 
 Flujo de datos: **API → DTO → mapper → Entity → Room → Flow → ViewModel (StateFlow) → pantalla**.
+
+### Opción Imágenes (Alumno 1)
+
+- Lista de APOD de los últimos 7 días (hoy − 6 días hasta hoy), de la más reciente a la más
+  antigua, con imagen, título y fecha. Si `media_type` es `video` se muestra
+  “Contenido en video” en lugar de la imagen.
+- Detalle con la imagen en grande (`hdurl` o, si no existe, `url`), título, fecha,
+  explicación completa y autor (`copyright`) cuando existe.
+- Favoritos (★/☆) en la lista y el detalle; pantalla **“Mis imágenes favoritas”** desde la
+  barra superior.
 
 ### Opción Asteroides (Alumno 2)
 
@@ -78,6 +92,14 @@ Flujo de datos: **API → DTO → mapper → Entity → Room → Flow → ViewMo
   5. Agrega la dependencia de Coil si la necesita para las imágenes.
 - No se cambian los nombres de las rutas de los grafos ni el nombre de la base de datos sin
   avisar al compañero.
+
+### Integración realizada
+
+La primera versión de la opción Imágenes se entregó en el PR #2 dentro de un paquete aparte
+(`pe.edu.demo.diarioespacial`) con su propio `MainActivity` y su propia base de datos.
+En la rama `feature/integracion-apod` se movió a la base común siguiendo los pasos de arriba
+(una sola `AppDatabase` versión 2, un solo `RetrofitClient` y una sola barra inferior) y se
+eliminó el código duplicado.
 
 ## Flujo de trabajo en Git
 
